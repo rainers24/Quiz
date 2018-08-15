@@ -1,0 +1,21 @@
+{
+    "name": "quiz/quiz",
+    "description": "",
+    "authors": [
+        {
+            "name": "Rainers",
+            "email": "rainersks@gmail.com"
+        }
+    ],
+    "require": {
+    },
+    "autoload": {
+        "psr-4": {
+            "Quiz\\": "src/",
+            "Quiz\\Tests\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.3"
+    }
+}
