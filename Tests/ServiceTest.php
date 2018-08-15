@@ -20,16 +20,29 @@ use Quiz\Repositories\UserRepository;
 
 class ServiceTest extends TestCase
 {
+    /** @var  QuizRepository */
     private $quizRepository;
+    /** @var  QuizService */
     private $quizService;
-    private $UserAnswerRepository;
-
+    /** @var  UserAnswerRepository */
+    private $userAnswerRepository;
+    /** @var  UserRepository */
+    private $userRepository;
 
     public function setUp()/* The :void return type declaration that should be here would cause a BC issue */
     {
         parent::setUp();
-
+        $this->userAnswerRepository = new UserAnswerRepository;
         $this->quizRepository = new QuizRepository;
+        $this->userRepository = new UserRepository;
+
+        $this->quizService = new QuizService(
+            $this->quizRepository,
+            $this->userRepository,
+            $this->userAnswerRepository
+        );
+        $this->userAnswerRepository = new UserAnswerRepository;
+
 
         $data = [
             'Country capitals' => [
@@ -109,15 +122,15 @@ class ServiceTest extends TestCase
     public function testAnswerService()
     {
 
-
         $answers = $this->quizService->getAnswers(1);
+
         self::assertCount(4, $answers, 'Answer count matches');
 
     }
 
     public function testQuestionService()
     {
-        $questions = $this->quizService->getQuestion(1);
+        $questions = $this->quizService->getQuestions(1);
         self::assertCount(3, $questions, 'Question count matches');
 
     }
@@ -125,34 +138,58 @@ class ServiceTest extends TestCase
     public function testListService()
     {
 
-        $this->quizService = new QuizService;
-
-
         $lists = $this->quizService->getQuizes();
         self::assertCount(2, $lists, 'Quiz count matches');
 
     }
 
+    public function testSubmitAnswerFromNonExistingUser()
+    {
+        // Existing quiz, answer but non-existing user
+        self::expectException(\Exception::class);
+        $this->quizService->submitAnswer(500, 1, 1);
+
+    }
 
     public function testSubmitAnswerService()
     {
-        $this->quizService = new QuizService;
-        $this->UserAnswerRepository = new UserAnswerRepository;
 
-        $answer = $this->quizService->submitAnswer(80 , 90 , 100);
-        $answerfound = $this->UserAnswerRepository->getAnswers (80 ,90);
+        $answer = $this->quizService->submitAnswer(80, 90, 100);
+        $answerfound = $this->userAnswerRepository->getAnswers(80, 90);
         $answerfound = array_shift($answerfound);
         self::assertEquals($answer, $answerfound, 'ok');
 
     }
 
+    public function testRegisterUser()
+    {
+        $newUser = $this->quizService->registerUser('Antons');
+
+        self::assertFalse($newUser->isNew(), 'not new');
+   }
+
+
+
     public function testisQuizCompletedService()
     {
+        //
+        //
+        //
+        //
+        //
 
     }
 
     public function testGetScoreService()
     {
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
 
 
     }

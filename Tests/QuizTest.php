@@ -137,26 +137,16 @@ class QuizTest extends TestCase
         $repo = new QuizRepository();
 
         $quiz = new QuizModel();
-        $quiz ->name = "Latvia";
-        $repo->addQuiz($quiz );
-
-        $newQuiz = new QuizModel();
-        $newQuiz ->name = "Estonia";
-        $repo->addQuiz($newQuiz );
-
-        $newQuiz2 = new QuizModel();
-        $newQuiz2 ->name = "Lithuania";
-        $repo->addQuiz($newQuiz2);
+        $quiz->name = "Latvia";
+        $repo->addQuiz($quiz);
 
         $testResult = $repo->getList();
 
         $quiz1 = array_shift($testResult);
-        $quiz2 = array_shift($testResult);
-        $quiz3 = array_shift($testResult);
+
 
         self::assertEquals("Latvia", $quiz1->name);
-        self::assertEquals("Estonia", $quiz2->name);
-        self::assertEquals("Lithuania", $quiz3->name);
+
     }
 }
 

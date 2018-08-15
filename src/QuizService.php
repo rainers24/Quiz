@@ -2,6 +2,7 @@
 
 namespace Quiz;
 
+use Exception;
 use Quiz\Models\AnswerModel;
 use Quiz\Models\QuestionModel;
 use Quiz\Models\QuizModel;
@@ -21,13 +22,17 @@ class QuizService
     private $userAnswers;
     private $userId;
 
+    /**
+     * QuizService constructor.
+     * @param QuizRepository $quizes
+     * @param UserRepository $users
+     * @param UserAnswerRepository $userAnswers
+     */
     public function __construct(
-        QuizService $quizService,
         QuizRepository $quizes,
         UserRepository $users,
         UserAnswerRepository $userAnswers
     ) {
-        $this->quizService = $quizService;
         $this->quizes = $quizes;
         $this->users = $users;
         $this->userAnswers = $userAnswers;
@@ -49,11 +54,15 @@ class QuizService
      *
      * @param string $name
      * @return UserModel
+     * @throws Exception
      */
     public function registerUser(string $name): UserModel
     {
         $user = new UserModel;
         $user->name = $name;
+        if (!preg_match("/^[a-zA-Z ]*$/", $name)) {
+            throw new Exception ("Only letters and white space allowed");
+        }
         return $this->users->saveOrCreate($user);
     }
 
@@ -90,21 +99,24 @@ class QuizService
     /**
      * Get list of available answers for this question
      *
-     * @param int $questionId
+     * @param int $questionid
      * @return AnswerModel[]
      */
 
-    public function getAnswers(int $questionId): array
+    public function getAnswers(int $questionid): array
     {
-        return $this->quizes->getAnswers($questionId);
+        return $this->quizes->getAnswers($questionid);
     }
 
     /**
      * Submit current users answer
      *
+     *
      * @param int $userId
      * @param int $quizId
      * @param int $answerId
+     * @return UserAnswerModel
+     * @throws Exception
      * @internal param int $questionId
      */
     public function submitAnswer(int $userId, int $quizId, int $answerId)
@@ -114,7 +126,10 @@ class QuizService
         $answeToSave->quizId = $quizId;
         $answeToSave->answerId = $answerId;
 
-         $this->userAnswers->saveAnswer($answeToSave);
+        if (!$this->isExistingUser($userId)) {
+            throw new Exception('User does not exist');
+      }
+       return  $this->userAnswers->saveAnswer($answeToSave);
 
     }
 
@@ -156,4 +171,6 @@ class QuizService
         }
         return round(($result / $quizQuestionCount) * 100);
     }
+
+
 }
