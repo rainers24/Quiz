@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: rainerskniss
- * Date: 14/08/2018
- * Time: 11:16 AM
- */
 
 namespace Quiz\Repositories;
 
@@ -17,7 +11,6 @@ class UserAnswerRepository
     /** @var UserAnswerModel[] */
     private $results = [];
     private $idCounter;
-    private $userAnswers;
 
 
     public function saveAnswer(UserAnswerModel $userAnswer): UserAnswerModel
