@@ -3,6 +3,7 @@
 namespace Quiz\Database\Mysql;
 
 use PDO;
+use PDOStatement;
 use Quiz\Interfaces\ConnectionInterface;
 
 class MysqlConnection implements ConnectionInterface
@@ -59,11 +60,16 @@ class MysqlConnection implements ConnectionInterface
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
-
-    protected function buildSelect (array $select = []): string {
-        if(!$select) {
+    /**
+     * @param array $select
+     * @return string
+     */
+    protected function buildSelect(array $select = []): string
+    {
+        if (!$select) {
             return '*';
-        } return implode(',' , $select);
+        }
+        return implode(',', $select);
 
     }
 
@@ -92,14 +98,16 @@ class MysqlConnection implements ConnectionInterface
      */
     public function update(string $table, string $primaryKey, array $attributes): bool
     {
-        $primaryKey = "$primaryKey = $attributes[$primaryKey]";
+        $primaryKeySql = "$primaryKey = $attributes[$primaryKey]";
         $attributes = $this->prepareAttributes($attributes, $primaryKey);
-        $updateStatements= [];
-
+        $updateStatements = [];
         foreach ($attributes as $attribute => $value) {
-            $updateStatements[] =implode()
-
+            $updateStatements[] = implode(' = ', [$attribute, '?']);
         }
+        $updateSql = implode(', ', $updateStatements);
+        $sql = "UPDATE $table SET $updateSql WHERE $primaryKeySql";
+        $statement = $this->connection->prepare($sql);
+        return $statement->execute(array_values($attributes));
     }
 
     /**
@@ -108,18 +116,35 @@ class MysqlConnection implements ConnectionInterface
      */
     public function fetchColumns(string $table): array
     {
-        $statement = $this->connection->prepare();
+        $statement = $this->connection->prepare("DESCRIBE $table");
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_COLUMN);
     }
 
+    /**
+     * @return string
+     */
     private function getDataSourceName(): string
     {
-        return $this->config->driver . 'host=' . $this->config->host . ';charset=utf8;dbname=' . $this->config->database;
+        return $this->config->driver . ':host=' . $this->config->host . ';charset=utf8;dbname=' . $this->config->database;
     }
 
-    protected function prepareStatement(string $sql , array $params): \PDOStatement{
 
 
+    /**
+     * @param string $sql
+     * @param array $params
+     * @return PDOStatement
+     */
+    protected function prepareStatement(string $sql, array $params): PDOStatement
+    {
+        $statement = $this->connection->prepare($sql);
+        foreach ($params as $key => $param) {
+            $statement->bindValue($key, $param);
+        }
+        return $statement;
     }
+
     /**
      * @param array $attributes
      * @param $primaryKey

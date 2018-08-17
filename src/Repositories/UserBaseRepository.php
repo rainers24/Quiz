@@ -11,7 +11,7 @@ namespace Quiz\Repositories;
 
 use Quiz\Models\UserModel;
 
-class UserDatabaseRepository extends DatabaseRepository
+class UserBaseRepository extends BaseRepository
 {
    public static function modelName(): string
    {

@@ -1,13 +1,15 @@
 <?php
+
 namespace Quiz\Models;
 
 
-class UserModel
+class UserModel extends BaseModel
 {
     /** @var int */
     public $id;
     /** @var string */
     public $name;
+
 
     public function __construct(int $id = 0, string $name = '')
     {

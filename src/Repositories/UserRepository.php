@@ -1,15 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: rainerskniss
- * Date: 14/08/2018
- * Time: 11:14 AM
- */
 
 namespace Quiz\Repositories;
 
 
-use quiz\Models\UserModel;
+use Quiz\Models\UserModel;
 
 class UserRepository
 {

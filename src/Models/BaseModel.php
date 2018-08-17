@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: rainerskniss
- * Date: 16/08/2018
- * Time: 4:02 PM
- */
+
 
 namespace Quiz\Models;
 
@@ -19,4 +14,23 @@ abstract class BaseModel
      * @var array
      */
     public $attributes;
+
+    public function jsonSerialize()
+    {
+
+        return $this->attributes;
+    }
+
+    public function setAttributes(array $attributes = [])
+    {
+
+        foreach ($attributes as $key => $value) {
+            if (property_exists(static::class, $key)) {
+                $this->$key = $value;
+            }
+
+        }
+
+    }
+
 }
