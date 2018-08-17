@@ -4,13 +4,12 @@ namespace Quiz\Controllers;
 
 use Quiz\Models\UserModel;
 use Quiz\Repositories\UserBaseRepository;
-use Quiz\Repositories\UserRepository;
 
 class AjaxController extends BaseAjaxController
 {
     public function indexAction()
     {
-        $repo = new UserRepository;
+        $repo = new UserBaseRepository();
         $user = new UserModel;
         $user->name = 'Rainers';
         $repo->save($user);

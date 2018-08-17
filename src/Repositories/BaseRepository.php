@@ -9,9 +9,7 @@ use Quiz\Models\BaseModel;
 
 abstract class BaseRepository implements RepositoryInterface
 {
-    /**
-     * @var MysqlConnection
-     */
+    /*** @var MysqlConnection */
     protected $connection;
 
     private static function getPrimaryKey()
@@ -19,13 +17,14 @@ abstract class BaseRepository implements RepositoryInterface
         return 'id';
     }
 
+    /*** @return MysqlConnection */
     public function connect()
     {
-        $this->connection = new MysqlConnection();
-
+        $this->connection = new MysqlConnection;
         return $this->connection;
     }
 
+    /*** @return null */
     public function closeConnection()
     {
         return $this->connection = null;
@@ -34,22 +33,52 @@ abstract class BaseRepository implements RepositoryInterface
 
     /**
      * @param int $id
-     * @return mixed
+     * @return mixed|null
      */
-    public function getbyId(int $id)
+    public function getById(int $id)
     {
-        $table = static::getTableName();
-        $select = $this->select($table , ['id' => $id]);
-
-
-        $sql = "SELECT * FROM $table WHERE id = ?";
-        $statement = $this->connection->prepare($sql);
-        $statement->execute([$id]);
-
-        return $statement->fetch(PDO::FETCH_ASSOC);
-
+        return $this->one(['id' => $id]);
     }
 
+    /**
+     * @param array $conditions
+     * @return mixed|null
+     */
+    public function one(array $conditions = [])
+    {
+        $data = static::connect()->select(static::getTableName(), $conditions)[0] ?? [];
+        if (!$data) {
+            return null;
+        }
+        return static::initLoaded($data);
+    }
+
+    /**
+     * @param array $attributes
+     * @return mixed
+     */
+    public static function initLoaded(array $attributes)
+    {
+        $instance = static::init($attributes);
+        $instance->isNew = false;
+        return $instance;
+    }
+
+//    public function getbyId(int $id)
+//    {
+//        $table = static::getTableName();
+//        $select = $this->connection->select($table, ['id' => $id]);
+//        $sql = "SELECT * FROM $table WHERE id = ?";
+//        $statement = $this->connection->prepare($sql);
+//        $statement->connection->execute([$id]);
+//
+//        return $statement->connection->fetch(PDO::FETCH_ASSOC);
+//
+//    }
+
+    /*** @param $model
+     * @return bool
+     */
     public function save($model): bool
     {
         $connection = static::connect();
@@ -59,8 +88,7 @@ abstract class BaseRepository implements RepositoryInterface
         return $connection->update(static::getTableName(), static::getPrimaryKey(), $this->getAttributes($model));
     }
 
-        /**
-     * @param array $conditions
+    /*** @param array $conditions
      * @return array
      */
     public function all(array $conditions = []): array
@@ -73,8 +101,7 @@ abstract class BaseRepository implements RepositoryInterface
         return $instances;
     }
 
-    /**
-     * @param array $attributes
+    /*** @param array $attributes
      * @return mixed
      */
     public static function init(array $attributes)
@@ -89,7 +116,9 @@ abstract class BaseRepository implements RepositoryInterface
         return $instance;
     }
 
-
+    /*** @param string $condition
+     * @return mixed
+     */
     public function getbyCondition(string $condition = 'id = 1')
     {
         $table = static::getTableName();
@@ -102,8 +131,7 @@ abstract class BaseRepository implements RepositoryInterface
 
     }
 
-    /**
-     * @param BaseModel $model
+    /*** @param BaseModel $model
      * @return array
      */
     public function getAttributes($model): array
@@ -113,8 +141,8 @@ abstract class BaseRepository implements RepositoryInterface
         }
         return $model->attributes;
     }
-    /**
-     * @param $model
+
+    /*** @param $model
      * @return BaseModel
      */
     protected function prepareAttributes($model): BaseModel
@@ -129,10 +157,4 @@ abstract class BaseRepository implements RepositoryInterface
         $model->attributes = $attributes;
         return $model;
     }
-
-
-
-
-
-
 }

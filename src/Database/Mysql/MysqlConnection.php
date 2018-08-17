@@ -129,6 +129,9 @@ class MysqlConnection implements ConnectionInterface
         return $this->config->driver . ':host=' . $this->config->host . ';charset=utf8;dbname=' . $this->config->database;
     }
 
+    public function prepare($sql)
+    {
+    }
 
 
     /**

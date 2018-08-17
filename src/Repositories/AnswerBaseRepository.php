@@ -9,7 +9,6 @@
 namespace Quiz\Repositories;
 
 
-
 use Quiz\Models\AnswerModel;
 
 class AnswerBaseRepository extends BaseRepository

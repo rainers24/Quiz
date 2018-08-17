@@ -12,12 +12,13 @@ class BaseController
     /*** @var $action */
     protected $action;
 
+    protected $template;
+
     public function handleCall(string $action)
     {
         $this->action = $action;
         $this->post = $_POST;
         $this->get = $_GET;
-
         $this->callAction($action);
 
     }
@@ -30,6 +31,7 @@ class BaseController
     protected function render(string $view, array $variables = []): string
     {
         $viewFile = $this->resolveViewFile($view);
+      //  $templatefile = $this->
         if (file_exists($viewFile)) {
             extract($variables);
             ob_start();

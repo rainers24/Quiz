@@ -9,23 +9,18 @@
 namespace Quiz\Repositories;
 
 
-
 use Quiz\Models\QuestionModel;
 
 class QuestionBaseRepository extends BaseRepository
 {
 
-    /**
-     * @return string
-     */
+    /*** @return string */
     public static function modelName(): string
     {
         return QuestionModel::class;
     }
 
-    /**
-     * @return string
-     */
+    /*** @return string */
     public static function getTableName(): string
     {
         return 'questions';

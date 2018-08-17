@@ -13,10 +13,10 @@ use Quiz\Models\UserModel;
 
 class UserBaseRepository extends BaseRepository
 {
-   public static function modelName(): string
-   {
-return UserModel::class;
-   }
+    public static function modelName(): string
+    {
+        return UserModel::class;
+    }
 
     public static function getTableName(): string
     {
