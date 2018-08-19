@@ -1,28 +1,22 @@
 <?php
-
 namespace Quiz\Controllers;
-
 use Quiz\Models\UserModel;
 use Quiz\Repositories\UserBaseRepository;
-
 class AjaxController extends BaseAjaxController
 {
-    public function indexAction()
+    /** @var UserBaseRepository */
+    protected $userRepository;
+    public function __construct(UserBaseRepository $userRepository)
     {
-        $repo = new UserBaseRepository();
-        $user = new UserModel;
-        $user->name = 'Rainers';
-        $repo->save($user);
-
+        $this->userRepository = $userRepository;
     }
-
     public function saveUserAction()
     {
-        $userRepo = new UserBaseRepository();
-
-        echo'halo halo ';
-        $user = new UserModel(1 , 'Rainers');
-        $userRepo->connect();
-        $userRepo->save($user);
+        $name = $this->post->get('name');
+        /** @var UserModel $user */
+        $user = $this->userRepository->create();
+        $user->name = $name;
+        $this->userRepository->save($user);
+        return $user;
     }
 }

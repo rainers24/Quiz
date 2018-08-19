@@ -1,151 +1,111 @@
 <?php
-
 namespace Quiz\Repositories;
-
-use PDO;
-use Quiz\Database\Mysql\MysqlConnection;
+use Quiz\Interfaces\ConnectionInterface;
 use Quiz\Interfaces\RepositoryInterface;
 use Quiz\Models\BaseModel;
-
 abstract class BaseRepository implements RepositoryInterface
 {
-    /*** @var MysqlConnection */
-    protected $connection;
-
-    private static function getPrimaryKey()
+    /** @var ConnectionInterface */
+    private $connection;
+    /**
+     * @param array $conditions
+     * @return static[]
+     */
+    public function all(array $conditions = []): array
+    {
+        $dataArray = $this->connection->select(static::getTableName(), $conditions);
+        $instances = [];
+        foreach ($dataArray as $data) {
+            $instances[] = $this->init($data);
+        }
+        return $instances;
+    }
+    /**
+     * @return string
+     */
+    abstract public static function getTableName(): string;
+    /**
+     * @return string
+     */
+    public static function getPrimaryKey(): string
     {
         return 'id';
     }
-
-    /*** @return MysqlConnection */
-    public function connect()
+    public function __construct(ConnectionInterface $connection)
     {
-        $this->connection = new MysqlConnection;
-        return $this->connection;
+        $this->connection = $connection;
     }
-
-    /*** @return null */
-    public function closeConnection()
+    /**
+     * @param array $attributes
+     * @return BaseModel
+     */
+    public function init(array $attributes)
     {
-        return $this->connection = null;
-
+        $class = static::modelName();
+        /** @var BaseModel $instance */
+        $instance = new $class;
+        $instance->setAttributes($attributes);
+        return $instance;
     }
-
+    /**
+     * @param array $attributes
+     * @return BaseModel
+     */
+    public function initLoaded(array $attributes)
+    {
+        $instance = $this->init($attributes);
+        $instance->isNew = false;
+        return $instance;
+    }
     /**
      * @param int $id
-     * @return mixed|null
+     * @return BaseModel
      */
     public function getById(int $id)
     {
         return $this->one(['id' => $id]);
     }
-
     /**
      * @param array $conditions
-     * @return mixed|null
+     * @param array $select
+     * @return BaseModel
      */
-    public function one(array $conditions = [])
+    public function one(array $conditions = [], array $select = [])
     {
-        $data = static::connect()->select(static::getTableName(), $conditions)[0] ?? [];
+        $data = array_first($this->connection->select(static::getTableName(), $conditions, $select));
         if (!$data) {
             return null;
         }
-        return static::initLoaded($data);
+        return $this->initLoaded($data);
     }
-
     /**
-     * @param array $attributes
-     * @return mixed
-     */
-    public static function initLoaded(array $attributes)
-    {
-        $instance = static::init($attributes);
-        $instance->isNew = false;
-        return $instance;
-    }
-
-//    public function getbyId(int $id)
-//    {
-//        $table = static::getTableName();
-//        $select = $this->connection->select($table, ['id' => $id]);
-//        $sql = "SELECT * FROM $table WHERE id = ?";
-//        $statement = $this->connection->prepare($sql);
-//        $statement->connection->execute([$id]);
-//
-//        return $statement->connection->fetch(PDO::FETCH_ASSOC);
-//
-//    }
-
-    /*** @param $model
+     * @param BaseModel $model
      * @return bool
      */
     public function save($model): bool
     {
-        $connection = static::connect();
+        $connection = $this->connection;
         if ($model->isNew) {
-            return $connection->insert(static::getTableName(), static::getPrimaryKey(), $this->getAttributes($model));
+            $connection->insert(static::getTableName(), static::getPrimaryKey(), $this->getAttributes($model));
+            $model->id = $connection->getLastInsertId();
+            $this->prepareAttributes($model);
         }
         return $connection->update(static::getTableName(), static::getPrimaryKey(), $this->getAttributes($model));
     }
-
-    /*** @param array $conditions
-     * @return array
-     */
-    public function all(array $conditions = []): array
-    {
-        $dataArray = static::connect()->select(static::getTableName(), $conditions);
-        $instances = [];
-        foreach ($dataArray as $data) {
-            $instances[] = static::init($data);
-        }
-        return $instances;
-    }
-
-    /*** @param array $attributes
-     * @return mixed
-     */
-    public static function init(array $attributes)
-    {
-        $class = static::modelName();
-        $instance = new $class;
-        foreach ($attributes as $key => $value) {
-            if (property_exists($class, $key)) {
-                $instance->$key = $value;
-            }
-        }
-        return $instance;
-    }
-
-    /*** @param string $condition
-     * @return mixed
-     */
-    public function getbyCondition(string $condition = 'id = 1')
-    {
-        $table = static::getTableName();
-        $sql = "SELECT * FROM $table where $condition";
-
-        $statement = $this->connection->prepare($sql);
-        $statement->execute();
-
-        return $statement->fetch(PDO::FETCH_ASSOC);
-
-    }
-
-    /*** @param BaseModel $model
+    /**
+     * @param BaseModel $model
      * @return array
      */
     public function getAttributes($model): array
     {
-        if (!$model->attributes) {
-            $model = $this->prepareAttributes($model);
-        }
+        $model = $this->prepareAttributes($model);
         return $model->attributes;
     }
-
-    /*** @param $model
+    /**
+     * @param $model
      * @return BaseModel
      */
-    protected function prepareAttributes($model): BaseModel
+    protected function prepareAttributes($model)
     {
         $columns = $this->connection->fetchColumns(static::getTableName());
         $attributes = [];
@@ -156,5 +116,13 @@ abstract class BaseRepository implements RepositoryInterface
         }
         $model->attributes = $attributes;
         return $model;
+    }
+    /**
+     * @param array $attributes
+     * @return BaseModel
+     */
+    public function create(array $attributes = [])
+    {
+        return $this->init($attributes);
     }
 }

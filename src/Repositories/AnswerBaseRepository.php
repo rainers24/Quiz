@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: rainerskniss
- * Date: 17/08/2018
- * Time: 1:11 PM
- */
+
 
 namespace Quiz\Repositories;
 

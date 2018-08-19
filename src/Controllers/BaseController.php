@@ -1,53 +1,88 @@
 <?php
-
 namespace Quiz\Controllers;
-
-
-class BaseController
+use Illuminate\Support\Collection;
+abstract class BaseController
 {
-    /*** @var $post */
+    /** @var string */
+    protected $template = 'default';
+    /** @var Collection */
     protected $post;
-    /*** @var $get */
+    /** @var Collection */
     protected $get;
-    /*** @var $action */
+    /** @var string */
     protected $action;
-
-    protected $template;
-
+    /**
+     * @param string $action
+     */
     public function handleCall(string $action)
     {
         $this->action = $action;
-        $this->post = $_POST;
-        $this->get = $_GET;
+        $this->post = $this->prepareParams($_POST);
+        $this->get = $this->prepareParams($_GET);
         $this->callAction($action);
-
     }
-
-    private function callAction($action)
+    /**
+     * @param array $params
+     * @return Collection
+     */
+    protected function prepareParams(array $params): Collection
     {
-        echo static::$action();
+        foreach ($params as $key => $value) {
+            $params[$key] = htmlspecialchars($value);
+        }
+        return collect($params);
     }
-
+    /**
+     * @param $action
+     */
+    protected function callAction($action)
+    {
+        echo $this->$action();
+    }
+    /**
+     * @param string $view
+     * @param array $variables
+     * @return string
+     */
     protected function render(string $view, array $variables = []): string
     {
         $viewFile = $this->resolveViewFile($view);
-      //  $templatefile = $this->
-        if (file_exists($viewFile)) {
-            extract($variables);
-            ob_start();
-            include "$viewFile";
-            $output = ob_get_clean();
-            return $output;
-
+        $templateFile = $this->resolveTemplateFile($this->template);
+        if (!file_exists($viewFile)) {
+            return 'View not found ' . $viewFile;
         }
-        return '';
+        $content = $this->getViewContent($viewFile, $variables);
+        if (!file_exists($templateFile)) {
+            return $content;
+        }
+        return $this->getViewContent($templateFile, compact('content'));
     }
-
-    private function resolveViewFile($view)
+    /**
+     * @param string $fileName
+     * @param array $variables
+     * @return string
+     */
+    public function getViewContent(string $fileName, array $variables = []): string
     {
-        return VIEW_DIR . "/$view.php";
+        extract($variables);
+        ob_start();
+        include "$fileName";
+        return ob_get_clean();
     }
-
-
-
+    /**
+     * @param string $template
+     * @return string
+     */
+    protected function resolveTemplateFile(string $template): string
+    {
+        return TEMPLATE_DIR . "/$template.phtml";
+    }
+    /**
+     * @param string $view
+     * @return string
+     */
+    protected function resolveViewFile(string $view): string
+    {
+        return VIEW_DIR . "/$view.phtml";
+    }
 }

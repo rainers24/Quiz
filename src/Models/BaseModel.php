@@ -17,7 +17,6 @@ abstract class BaseModel
 
     public function jsonSerialize()
     {
-
         return $this->attributes;
     }
 

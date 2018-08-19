@@ -8,6 +8,8 @@ class UserAnswerModel
     public $userId;
     public $quizId;
     public $answerId;
+    public $createdAt;
+    public $questionId;
 
 
     /**

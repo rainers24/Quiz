@@ -8,30 +8,31 @@ use Quiz\Models\QuestionModel;
 use Quiz\Models\QuizModel;
 use Quiz\Models\UserAnswerModel;
 use Quiz\Models\UserModel;
-use Quiz\Repositories\QuizRepository;
-use Quiz\Repositories\UserAnswerRepository;
-use Quiz\Repositories\UserRepository;
+use Quiz\Repositories\QuizBaseRepository;
+use Quiz\Repositories\UserAnswerBaseRepository;
+use Quiz\Repositories\UserBaseRepository;
+
 
 class QuizService
 {
-    /** @var QuizRepository */
+    /** @var QuizBaseRepository */
     private $quizes;
-    /** @var UserRepository */
+    /** @var UserBaseRepository */
     private $users;
-    /** @var UserAnswerRepository */
+    /** @var UserAnswerBaseRepository */
     private $userAnswers;
     private $userId;
 
     /**
      * QuizService constructor.
-     * @param QuizRepository $quizes
-     * @param UserRepository $users
-     * @param UserAnswerRepository $userAnswers
+     * @param QuizBaseRepository $quizes
+     * @param UserBaseRepository $users
+     * @param UserAnswerBaseRepository $userAnswers
      */
     public function __construct(
-        QuizRepository $quizes,
-        UserRepository $users,
-        UserAnswerRepository $userAnswers
+        QuizBaseRepository $quizes,
+        UserBaseRepository $users,
+        UserAnswerBaseRepository $userAnswers
     ) {
         $this->quizes = $quizes;
         $this->users = $users;
