@@ -2,15 +2,13 @@
 
 namespace Quiz\Controllers;
 
-
-
-class BaseAjaxController extends BaseController
+abstract class BaseAjaxController extends BaseController
 {
     public function callAction($action)
     {
         $content = static::$action();
 
-        echo json_encode(['result' => $content]);
-
+        header('Content-Type: application/json; charset=UTF-8');
+        echo json_encode(['result' => $content], JSON_UNESCAPED_UNICODE);
     }
 }

@@ -1,13 +1,18 @@
 <?php
+
 namespace Quiz\Core;
+
 use Exception;
 use Throwable;
+
 class DependencyContainer
 {
     /**  @var array */
     private $instances = [];
+
     /** @var array */
     private $interfaces = [];
+
     /**
      * Get an instance of the given class, interface or abstract class from
      * the container.
@@ -30,6 +35,7 @@ class DependencyContainer
             return $this->create($class);
         }
     }
+
     /**
      * Create a new class.
      *
@@ -65,6 +71,7 @@ class DependencyContainer
         $this->instances[$class] = $instance;
         return $instance;
     }
+
     /**
      * Register an existing object instance into the container.
      *
@@ -75,6 +82,7 @@ class DependencyContainer
     {
         $this->instances[$class] = $instance;
     }
+
     /**
      * Register an interface or abstract class implementation to be
      * instantiated when needed.

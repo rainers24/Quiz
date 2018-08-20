@@ -1,26 +1,18 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: rainerskniss
- * Date: 17/08/2018
- * Time: 1:15 PM
- */
 
 namespace Quiz\Repositories;
 
+use Quiz\Models\User;
 
-use Quiz\Models\ResultModel;
-
-class ResultBaseRepository extends BaseRepository
+class UserRepository extends BaseRepository
 {
-
     /**
+     * Returns the corresponding model class name
      * @return string
      */
     public static function modelName(): string
     {
-
-        return ResultModel::class;
+        return User::class;
     }
 
     /**
@@ -28,6 +20,6 @@ class ResultBaseRepository extends BaseRepository
      */
     public static function getTableName(): string
     {
-        return 'results';
+        return 'users';
     }
 }

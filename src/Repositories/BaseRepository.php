@@ -1,12 +1,16 @@
 <?php
+
 namespace Quiz\Repositories;
+
 use Quiz\Interfaces\ConnectionInterface;
 use Quiz\Interfaces\RepositoryInterface;
 use Quiz\Models\BaseModel;
+
 abstract class BaseRepository implements RepositoryInterface
 {
     /** @var ConnectionInterface */
     private $connection;
+
     /**
      * @param array $conditions
      * @return static[]
@@ -14,16 +18,21 @@ abstract class BaseRepository implements RepositoryInterface
     public function all(array $conditions = []): array
     {
         $dataArray = $this->connection->select(static::getTableName(), $conditions);
+
         $instances = [];
+
         foreach ($dataArray as $data) {
             $instances[] = $this->init($data);
         }
+
         return $instances;
     }
+
     /**
      * @return string
      */
     abstract public static function getTableName(): string;
+
     /**
      * @return string
      */
@@ -31,10 +40,12 @@ abstract class BaseRepository implements RepositoryInterface
     {
         return 'id';
     }
+
     public function __construct(ConnectionInterface $connection)
     {
         $this->connection = $connection;
     }
+
     /**
      * @param array $attributes
      * @return BaseModel
@@ -45,8 +56,10 @@ abstract class BaseRepository implements RepositoryInterface
         /** @var BaseModel $instance */
         $instance = new $class;
         $instance->setAttributes($attributes);
+
         return $instance;
     }
+
     /**
      * @param array $attributes
      * @return BaseModel
@@ -55,8 +68,10 @@ abstract class BaseRepository implements RepositoryInterface
     {
         $instance = $this->init($attributes);
         $instance->isNew = false;
+
         return $instance;
     }
+
     /**
      * @param int $id
      * @return BaseModel
@@ -65,6 +80,7 @@ abstract class BaseRepository implements RepositoryInterface
     {
         return $this->one(['id' => $id]);
     }
+
     /**
      * @param array $conditions
      * @param array $select
@@ -73,11 +89,14 @@ abstract class BaseRepository implements RepositoryInterface
     public function one(array $conditions = [], array $select = [])
     {
         $data = array_first($this->connection->select(static::getTableName(), $conditions, $select));
+
         if (!$data) {
             return null;
         }
+
         return $this->initLoaded($data);
     }
+
     /**
      * @param BaseModel $model
      * @return bool
@@ -85,13 +104,16 @@ abstract class BaseRepository implements RepositoryInterface
     public function save($model): bool
     {
         $connection = $this->connection;
+
         if ($model->isNew) {
             $connection->insert(static::getTableName(), static::getPrimaryKey(), $this->getAttributes($model));
             $model->id = $connection->getLastInsertId();
             $this->prepareAttributes($model);
         }
+
         return $connection->update(static::getTableName(), static::getPrimaryKey(), $this->getAttributes($model));
     }
+
     /**
      * @param BaseModel $model
      * @return array
@@ -99,8 +121,10 @@ abstract class BaseRepository implements RepositoryInterface
     public function getAttributes($model): array
     {
         $model = $this->prepareAttributes($model);
+
         return $model->attributes;
     }
+
     /**
      * @param $model
      * @return BaseModel
@@ -109,14 +133,18 @@ abstract class BaseRepository implements RepositoryInterface
     {
         $columns = $this->connection->fetchColumns(static::getTableName());
         $attributes = [];
+
         foreach ($columns as $column) {
             if (property_exists(static::modelName(), $column)) {
                 $attributes[$column] = $model->{$column};
             }
         }
+
         $model->attributes = $attributes;
+
         return $model;
     }
+
     /**
      * @param array $attributes
      * @return BaseModel

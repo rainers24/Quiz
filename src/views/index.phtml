@@ -1,6 +1,6 @@
 <div class="container">
     <h1>Hello <?= $user->name; ?></h1>
-    <form id="user-form" method="POST" action="<?= "ajax/saveUserAction"; ?>">
+    <form id="user-form" method="POST" action="<?= "ajax/saveUser"; ?>">
         <label for="name">Vārds</label>
         <input type="text" id="name" name="name">
         <button type="submit">Save</button>

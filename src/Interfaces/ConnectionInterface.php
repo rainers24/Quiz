@@ -1,14 +1,16 @@
 <?php
+
 namespace Quiz\Interfaces;
+
 interface ConnectionInterface
 {
     /**
      * @param string $table
      * @param array $conditions
-     * @param array $select
+     * @param array $columns
      * @return array
      */
-    public function select(string $table, array $conditions = [], array $select = []): array;
+    public function select(string $table, array $conditions = [], array $columns = []): array;
 
     /**
      * @param string $table
@@ -32,5 +34,8 @@ interface ConnectionInterface
      */
     public function fetchColumns(string $table): array;
 
-
+    /**
+     * @return int
+     */
+    public function getLastInsertId(): int;
 }

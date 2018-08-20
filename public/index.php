@@ -1,23 +1,4 @@
 <?php
-//include_once '../vendor/autoload.php';
-//
-//use Quiz\Repositories\QuizRepository;
-//use Quiz\Repositories\UserBaseRepository;
-//
-//$quizRepo = new QuizRepository;
-//$repo = new UserBaseRepository;
-//
-//$repo ->connect();
-//$data = $repo-> getbyId( '1');
-//var_dump($data);
-//
-//$data = $repo->getbyCondition('id =2');
-//
-//var_dump($data);
-//
-
-
-
 use Quiz\Controllers\BaseController;
 define('BASE_DIR', __DIR__ . '/..');
 define('SOURCE_DIR', BASE_DIR . '/src');
