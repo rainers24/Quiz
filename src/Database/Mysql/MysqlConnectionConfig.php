@@ -18,6 +18,11 @@ class MysqlConnectionConfig
     /**
      * @var string
      */
+    public $charset = 'utf8';
+
+    /**
+     * @var string
+     */
     public $password = 'abcd1234';
     /**
      * @var string

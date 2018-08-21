@@ -1,20 +1,42 @@
 <template>
-    <div >
-        <input v-model="name" />
-        <select v-model="activeQuizId">
-            <option v-for="Quiz in allQuizzes">{{Quiz.name}}</option>
-        </select>
-        <button @click="onStart">Start</button>
-    </div>
+    <div class="container">
+        <div v-if="!activeQuestion && !result">
 
+            <div>
+                <label>Your name</label>
+                <input type="text" v-model="name" />
+            </div>
+
+            <div>
+                <label>Pick your quiz</label>
+                <select v-model="activeQuizId">
+                    <option v-for="quiz in allQuizzes" :value="quiz.id">{{ quiz.name }}</option>
+                </select>
+            </div>
+
+            <div>
+                <button @click="onStart">Start</button>
+            </div>
+        </div>
+
+        <div v-else-if="activeQuestion">
+            <div>Hello, {{name}}!</div>
+            <QuestionItem />
+        </div>
+        <Results />
+    </div>
 </template>
 
 <script>
     import {mapActions}  from 'vuex';
     import * as types from '../store/mutations.js';
+    import QuestionItem from "./QuestionItem.vue";
+    import Results from './Results.vue';
+
 
     export default{
         name: 'Quiz',
+        components : {QuestionItem , Results},
         computed: {
             name: {
                 get(){
@@ -41,6 +63,16 @@
             allQuizzes: {
                 get(){
                     return this.$store.state.allQuizzes;
+                }
+            },
+            activeQuestion: {
+                get(){
+                    return this.$store.state.activeQuestion;
+                }
+            },
+            result: {
+                get() {
+                    return this.$store.state.result;
                 }
             }
         },

@@ -19,7 +19,7 @@ export default class Api {
      */
     get(action, params) {
 
-        Vue.axios.get(this.buildUrl(action), params ? params : {})
+      return  Vue.axios.get(this.buildUrl(action), params ? Api.parseParams(params) : {});
     }
 
     /**
@@ -29,11 +29,19 @@ export default class Api {
      * @return {AxiosPromise}
      */
     post(action, params) {
-        Vue.axios.post(this.buildUrl(action), params ? params : {})
+        return Vue.axios.post(this.buildUrl(action), params ? params : {})
     }
 
     buildUrl(url) {
         return '/' + this.controllerName + '/' + url;
+    }
+
+    static parseParams(object){
+        let params = new URLSearchParams();
+        for (let key in object){
+            params.append(key,object[key]);
+        }
+        return params;
     }
 }
 

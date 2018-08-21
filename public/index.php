@@ -1,5 +1,7 @@
 <?php
+
 use Quiz\Controllers\BaseController;
+
 define('BASE_DIR', __DIR__ . '/..');
 define('SOURCE_DIR', BASE_DIR . '/src');
 define('VIEW_DIR', SOURCE_DIR . '/views');
@@ -21,4 +23,5 @@ function run()
     $controller = app($controllerName);
     $controller->handleCall($actionName);
 }
+
 run();

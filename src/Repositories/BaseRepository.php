@@ -9,7 +9,7 @@ use Quiz\Models\BaseModel;
 abstract class BaseRepository implements RepositoryInterface
 {
     /** @var ConnectionInterface */
-    private $connection;
+    public $connection;
 
     /**
      * @param array $conditions
