@@ -1,26 +1,26 @@
 <template>
-    <div class="container">
+    <div class="quiz">
         <div v-if="!activeQuestion && !result">
 
-            <div>
+            <div class="quiz__title" >
                 <label>Your name</label>
-                <input type="text" v-model="name" />
+                <input class="quiz__input"  type="text" v-model="name" />
             </div>
 
-            <div>
-                <label>Pick your quiz</label>
-                <select v-model="activeQuizId">
+            <div >
+                <label class="quiz__select-text">Pick your quiz</label>
+                <select class="quiz__select" v-model="activeQuizId">
                     <option v-for="quiz in allQuizzes" :value="quiz.id">{{ quiz.name }}</option>
                 </select>
             </div>
 
             <div>
-                <button @click="onStart">Start</button>
+                <button class="quiz__start" @click="onStart">Start</button>
             </div>
         </div>
 
         <div v-else-if="activeQuestion">
-            <div>Hello, {{name}}!</div>
+            <div class="quiz__greeting">Hello, {{name}}!</div>
             <QuestionItem />
         </div>
         <Results />
@@ -51,10 +51,7 @@
                 get() {
                     return this.$store.state.activeQuizId;
                 },
-                set(newName){
-                    this.setName(newName);
 
-                },
                 set(newValue){
 //                    this.$store.commit(types.SET_ACTIVE_QUIZ, newValue)
                     this.setActiveQuizId(newValue);

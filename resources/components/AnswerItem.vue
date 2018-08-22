@@ -1,6 +1,6 @@
 <template>
 
-    <a href="#" @click="onAnswerPicked">{{answer.answer}}</a>
+    <a class="question__box" href="#" @click="onAnswerPicked">{{answer.answer}}</a>
 </template>
 
 <script>

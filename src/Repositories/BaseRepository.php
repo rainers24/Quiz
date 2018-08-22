@@ -24,9 +24,37 @@ abstract class BaseRepository implements RepositoryInterface
         foreach ($dataArray as $data) {
             $instances[] = $this->init($data);
         }
-
         return $instances;
     }
+
+    public function getAnswers(): array
+    {
+        $dataArray = $this->connection->select(static::getTableName(), ['question_id' ]);
+
+        $answers = [];
+
+        foreach ($dataArray as $data) {
+            $answers[] = $this->init($data);
+        }
+        return $answers;
+
+    }
+
+    public function getQuestions(): array
+
+    {
+        $dataArray = $this->connection->select(static::getTableName(), ['quiz_id' ]);
+
+        $questions = [];
+
+        foreach ($dataArray as $data) {
+            $questions[] = $this->init($data);
+        }
+        return $questions;
+    }
+
+
+
 
     /**
      * @return string
@@ -81,6 +109,13 @@ abstract class BaseRepository implements RepositoryInterface
         return $this->one(['id' => $id]);
     }
 
+    public function getOneQuestion(int $questionid)
+    {
+        return $this->one(['id' => $questionid]);
+    }
+
+
+
     /**
      * @param array $conditions
      * @param array $select
@@ -104,7 +139,6 @@ abstract class BaseRepository implements RepositoryInterface
     public function save($model): bool
     {
         $connection = $this->connection;
-
         if ($model->isNew) {
             $connection->insert(static::getTableName(), static::getPrimaryKey(), $this->getAttributes($model));
             $model->id = $connection->getLastInsertId();

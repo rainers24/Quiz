@@ -5,7 +5,7 @@ import Question from "../models/model.question.js";
 class QuizRepository{
 
     constructor(){
-        this.quizApi = new Api('ajax'); // change
+        this.quizApi = new Api('ajax');
 
     }
 
@@ -15,10 +15,9 @@ class QuizRepository{
      */
     getAllQuizzes(){
         return new Promise(resolve => {
-            this.quizApi.get('getAllQuizzes') // change
+            this.quizApi.get('getAllQuizzes')
                 .then(response => {
 
-                    // data.result parāda uz
                     let quizzes = response.data.result.map(Quiz.fromArray);
                     resolve(quizzes);
                 })
@@ -26,13 +25,15 @@ class QuizRepository{
         })
     }
 
+
     start(name, quizId){
         return new Promise(resolve => {
             this.quizApi.post('start', {name, quizId})
                 .then(response => {
                     let question =Question.fromArray(response.data.result);
 
-                    resolve(question)
+
+                    resolve(question);
 
                 })
                 .catch(() => alert('oh nooo!'));

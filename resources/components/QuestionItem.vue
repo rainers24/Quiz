@@ -4,13 +4,13 @@
             {{ question.question }}
         </h1>
 
-        <ul>
-            <li v-for="answer in question.answers">
-                <AnswerItem :answer="answer" :on-answered="onAnswerPicked"></AnswerItem>
+        <ul >
+            <li class="question__pick"  v-for="answer in question.answers">
+                <AnswerItem  :answer="answer" :on-answered="onAnswerPicked" ></AnswerItem>
             </li>
         </ul>
 
-        <button @click="onAnswered">Next question</button>
+        <button class="question__next" @click="onAnswered">Next question</button>
     </div>
 </template>
 

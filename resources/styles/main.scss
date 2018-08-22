@@ -1,0 +1,115 @@
+body {
+  font-family: Karla;
+
+}
+
+.quiz {
+  text-align: center;
+
+  border: 10px solid orange;
+  border-radius: 10px;
+  margin-top: 40px;
+  margin-bottom: 15px;
+
+  &__title {
+    font-size: x-large;
+    margin-bottom: 15px;
+  }
+
+  &__input {
+  }
+
+  &__input:hover {
+    border: 2px solid orange;
+  }
+  &__select:hover {
+    border: 2px solid orange;
+
+  }
+
+  &__select {
+    width: 100%;
+    text-align: center;
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 15px;
+  }
+  &__select-text {
+    font-size: large;
+    margin-top: 15px;
+    margin-bottom: 15px;
+  }
+  &__start {
+    margin-bottom: 15px;
+
+  }
+
+  &__result{
+    margin: 50px;
+  }
+  button:hover {
+    background-color: orange;
+    color: white;
+    box-shadow: black;
+  }
+
+  button, input, select {
+    text-align: center;
+    background-color: white;
+    width: 96%;
+    display: inline-block;
+    -webkit-transition-duration: 0.4s;
+    transition-duration: 0.4s;
+  }
+
+  ul {
+    padding: 0;
+    list-style: none;
+    columns: 2;
+    -webkit-columns: 2;
+    -moz-columns: 2;
+
+
+  }
+  li {
+    list-style: none;
+
+  }
+
+}
+
+.question {
+
+  &__next {
+    margin-bottom: 15px;
+  }
+
+  &__box {
+    display: inline-block;
+    margin-top: 5px;
+    color: black;
+    font-family: Karla;
+    width: 90%;
+
+  }
+
+  &__box:hover {
+
+    color: white;
+  }
+
+  &__pick{
+    border: 5px solid white;
+    background-color: orange;
+  }
+
+  &__pick:hover{
+    background-color: #ce9b0b;
+  }
+
+  &__pick:active{
+    background-color: black;
+  }
+
+
+}

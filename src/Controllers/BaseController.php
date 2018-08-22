@@ -26,7 +26,6 @@ abstract class BaseController
         $this->action = $action;
         $this->post = $this->prepareParams($_POST);
         $this->get = $this->prepareParams($_GET);
-
         $this->callAction($action);
     }
 

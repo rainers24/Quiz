@@ -1,5 +1,5 @@
 <template>
-    <div>{{result}}</div>
+    <div class="quiz__result">{{result}}</div>
 
 </template>
 <script>

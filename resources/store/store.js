@@ -3,7 +3,7 @@ import Vuex from 'vuex';
 import * as types from './mutations.js';
 import Question from '../models/model.question.js';
 
-import QuizRepository from '../repositories/_repository.quiz.js';
+import QuizRepository from '../repositories/repository.quiz.js';
 
 
 import Quiz from '../models/model.quiz.js';
@@ -17,6 +17,7 @@ export default new Vuex.Store({
         allQuizzes: [],
         activeQuestion: null,
         result: '',
+        allQuestions: [],
 
     },
     mutations: {
@@ -36,7 +37,11 @@ export default new Vuex.Store({
         },
         [types.SET_RESULTS](state , result){
             state.result = result;
+        },
+        [types.SET_ALL_QUESTIONS](state, questions) {
+            state.allQuestions = questions;
         }
+
 
     },
     actions: {
@@ -65,6 +70,7 @@ export default new Vuex.Store({
             //     // ].map(Quiz.fromArray)
 
         },
+
 
         setName(context, name){
             context.commit(types.SET_NAME, name);

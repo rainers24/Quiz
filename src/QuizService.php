@@ -47,47 +47,6 @@ class QuizService
 
     }
 
-    /**
-     * Register a new user
-     *
-     * @param string $name
-     * @return UserModel
-     * @throws Exception
-     */
-    public function registerUser(string $name): UserModel
-    {
-        $user = new UserModel;
-        $user->name = $name;
-        if (!preg_match("/^[a-zA-Z ]*$/", $name)) {
-            throw new Exception ("Only letters and white space allowed");
-        }
-        return $this->users->saveOrCreate($user);
-    }
-
-    /**
-     * Check if user exists in the system (is valid)
-     *
-     * @param int $userId
-     * @return bool
-     */
-    public function isExistingUser($userId): bool
-    {
-        $user = $this->users->getById($userId);
-
-        if ($user->isNew()) {
-            return false;
-        }
-
-        return true;
-    }
-
-
-    /**
-     * Get list of questions for a specific quiz
-     *
-     * @param $quizId
-     * @return QuestionModel[]
-     */
 
     public function getQuestions(int $quizId): array
     {

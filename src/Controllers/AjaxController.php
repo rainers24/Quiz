@@ -3,6 +3,8 @@
 namespace Quiz\Controllers;
 
 use Quiz\Models\User;
+use Quiz\Repositories\AnswerRepository;
+use Quiz\Repositories\QuestionRepository;
 use Quiz\Repositories\QuizRepository;
 use Quiz\Repositories\UserRepository;
 
@@ -11,14 +13,22 @@ class AjaxController extends BaseAjaxController
     /** @var UserRepository */
     protected $userRepository;
     protected $quizRepository;
+    protected $questionRepository;
+    protected $answerRepository;
 
-    public function __construct(UserRepository $userRepository, QuizRepository $quizRepository)
-    {
+    public function __construct(
+        UserRepository $userRepository,
+        QuizRepository $quizRepository,
+        QuestionRepository $questionRepository,
+        AnswerRepository $answerRepository
+    ) {
         if (!session_id()) {
             session_start();
         }
         $this->userRepository = $userRepository;
         $this->quizRepository = $quizRepository;
+        $this->questionRepository = $questionRepository;
+        $this->answerRepository = $answerRepository;
     }
 
     public function saveUserAction()
@@ -34,47 +44,68 @@ class AjaxController extends BaseAjaxController
 
     public function getAllQuizzesAction()
     {
-       return $this->quizRepository->all();
+        return $this->quizRepository->all();
     }
 
-    public function indexAction()
+    public function getQuestion()
     {
-        return [
-            'name' => '',
-            'quizes' => [
-                [
-                    'id' => 1,
-                    'name' => 'Programming'
-                ],
-            ]
-        ];
+        //return $this->questionRepository->getQuestions();
+        return $this->answerAction();
     }
+
+    public function answerAction()
+    {
+
+        $data =[] ;
+        $data1 = [] ;
+        $data2 = [];
+        $data =  $this->questionRepository->getQuestions();
+        $data1 = $this->answerRepository->getAnswers();
+        $data2 = array_merge($data , $data1);
+        //$data2 = array_map("unserialize", array_unique(array_map("serialize", $data2)));
+
+        return $data2;
+
+    }
+
+    public function mergeAction($quizId){
+       $data =[] ;
+       $data1 = [] ;
+       $data2 = [];
+       $data =  $this->questionRepository->getQuestions($quizId);
+       $data1 = $this->answerRepository->getAnswers();
+       $data2 = array_merge($data , $data1);
+        $data2 = array_map("unserialize", array_unique(array_map("serialize", $data2)));
+
+        sort( $data2 );
+        var_dump($data2);
+       return $data2;
+
+
+
+
+    }
+
 
     public function startAction()
     {
         $quizId = $this->post->get('quizId');
         $_SESSION['questionIndex'] = 0;
+        $_SESSION['activeQuizId'] = $quizId;
+        $name = $this->post->get('name');
+        $user = $this->userRepository->create();
+        $user->name = $name;
+        $this->userRepository->save($user);
 
-        return $this->getQuestion();
+        return $this->getQuestion($quizId);
     }
 
-    public function answerAction()
-    {
-        $answerId = $this->post->get('answerId');
-
-        $index = isset($_SESSION['questionIndex']) ? (int)$_SESSION['questionIndex'] : 0;
-        $index++;
-        $_SESSION['questionIndex'] = $index;
-
-        return $this->getQuestion($index);
-    }
-
-    public function getQuestion(int $index = 0)
+    public function dfghjll(int $index = 0)
     {
         $questions = [
             [
                 'id' => 1,
-                'question' => 'What is the most basic language Microsoft made?',
+                'question' => 'asdasd',
                 'answers' => [
                     [
                         'id' => 1,
@@ -115,9 +146,21 @@ class AjaxController extends BaseAjaxController
         ];
 
         if (!isset($questions[$index])) {
-            return 'Good you have done!';
+            return 'Have a nice day ! ';
         }
 
-        return $questions[$index];
+    }
+
+    public function fff()
+    {
+        $answerId = $this->post->get('answerId');
+
+
+        $index = isset($_SESSION['questionIndex']) ? (int)$_SESSION['questionIndex'] : 0;
+        $index++;
+        $answerId++;
+        $_SESSION['questionIndex'] = $index;
+
+        return $this->getQuestion($index);
     }
 }
