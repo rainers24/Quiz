@@ -3,6 +3,7 @@
 namespace Quiz\Controllers;
 
 use Quiz\Models\User;
+use Quiz\QuizService;
 use Quiz\Repositories\AnswerRepository;
 use Quiz\Repositories\QuestionRepository;
 use Quiz\Repositories\QuizRepository;
@@ -15,12 +16,14 @@ class AjaxController extends BaseAjaxController
     protected $quizRepository;
     protected $questionRepository;
     protected $answerRepository;
+    private $quizService;
 
     public function __construct(
         UserRepository $userRepository,
         QuizRepository $quizRepository,
         QuestionRepository $questionRepository,
-        AnswerRepository $answerRepository
+        AnswerRepository $answerRepository,
+        Quizservice $quizService
     ) {
         if (!session_id()) {
             session_start();
@@ -29,7 +32,9 @@ class AjaxController extends BaseAjaxController
         $this->quizRepository = $quizRepository;
         $this->questionRepository = $questionRepository;
         $this->answerRepository = $answerRepository;
+        $this->quizService = $quizService;
     }
+
 
     public function saveUserAction()
     {
@@ -47,120 +52,110 @@ class AjaxController extends BaseAjaxController
         return $this->quizRepository->all();
     }
 
-    public function getQuestion()
+    public function getQuestions($quizId)
     {
-        //return $this->questionRepository->getQuestions();
-        return $this->answerAction();
+        return $this->questionRepository->getQuestions($quizId);
     }
 
-    public function answerAction()
+    public function hjklkjhgjklkjh()
     {
 
-        $data =[] ;
-        $data1 = [] ;
+        $data = [];
+        $data1 = [];
         $data2 = [];
-        $data =  $this->questionRepository->getQuestions();
-        $data1 = $this->answerRepository->getAnswers();
-        $data2 = array_merge($data , $data1);
+        $data = $this->questionRepository->getQuestions(1);
+
+        $data1 = $this->answerRepository->getAnswers(1);
+        $data2 = array_merge($data, $data1);
         //$data2 = array_map("unserialize", array_unique(array_map("serialize", $data2)));
 
         return $data2;
 
     }
 
-    public function mergeAction($quizId){
-       $data =[] ;
-       $data1 = [] ;
-       $data2 = [];
-       $data =  $this->questionRepository->getQuestions($quizId);
-       $data1 = $this->answerRepository->getAnswers();
-       $data2 = array_merge($data , $data1);
-        $data2 = array_map("unserialize", array_unique(array_map("serialize", $data2)));
-
-        sort( $data2 );
-        var_dump($data2);
-       return $data2;
-
-
-
-
-    }
+//    public function mergeAction($quizId)
+//    {
+//        $data = [];
+//        $data1 = [];
+//        $data2 = [];
+//        $data = $this->questionRepository->getQuestions();
+//        $data1 = $this->answerRepository->getAnswers();
+//        $data2 = array_merge($data, $data1);
+//        $data2 = array_map("unserialize", array_unique(array_map("serialize", $data2)));
+//
+//        sort($data2);
+//        var_dump($data2);
+//        return $data2;
+//
+//
+//    }
 
 
     public function startAction()
     {
         $quizId = $this->post->get('quizId');
-        $_SESSION['questionIndex'] = 0;
+        $_SESSION['questionIndex'] = 1;
         $_SESSION['activeQuizId'] = $quizId;
         $name = $this->post->get('name');
         $user = $this->userRepository->create();
         $user->name = $name;
         $this->userRepository->save($user);
 
-        return $this->getQuestion($quizId);
+        return $this->getNextQuestionAnswer($quizId, $questionindex);
     }
 
-    public function dfghjll(int $index = 0)
-    {
-        $questions = [
-            [
-                'id' => 1,
-                'question' => 'asdasd',
-                'answers' => [
-                    [
-                        'id' => 1,
-                        'answer' => 'Visual Basic'
-                    ],
-                    [
-                        'id' => 2,
-                        'answer' => 'DirectX'
-                    ],
-                    [
-                        'id' => 3,
-                        'answer' => 'Batch'
-                    ],
-                    [
-                        'id' => 4,
-                        'answer' => 'C++'
-                    ],
-                ],
-            ],
-            [
-                'id' => 2,
-                'question' => 'What does HTML stand for?',
-                'answers' => [
-                    [
-                        'id' => 1,
-                        'answer' => 'Hyper Text Markup Language'
-                    ],
-                    [
-                        'id' => 2,
-                        'answer' => 'Home Tool Markup Language'
-                    ],
-                    [
-                        'id' => 3,
-                        'answer' => 'Hyperlinks and Text Markup Language'
-                    ],
-                ],
-            ]
-        ];
 
-        if (!isset($questions[$index])) {
-            return 'Have a nice day ! ';
+
+//    public function fff()
+//    {
+//        $answerId = $this->post->get('answerId');
+//
+//
+//        $index = isset($_SESSION['questionIndex']) ? (int)$_SESSION['questionIndex'] : 0;
+//        $index++;
+//        $answerId++;
+//        $_SESSION['questionIndex'] = $index;
+//
+//        return $this->getQuestion($index);
+//    }
+
+    public function getNextQuestionAnswer($quizId, &$questionindex)
+    {
+        $question = $this->quizService->getNextQuestion($quizId, $questionindex);
+
+        $answers = $this->answerRepository->getAnswers($question->id);
+        $questionWithAnswers = [];
+
+        $questionWithAnswers['id'] = $question->id;
+        $questionWithAnswers['question'] = $question->question;
+
+        $questionWithAnswers['answers'] = [];
+
+
+        foreach ($answers as $questionAnswer) {
+            $answer = [];
+            $answer['id'] = $questionAnswer->id;
+            $answer['answer'] = $questionAnswer->answer;
+
+            array_push($questionWithAnswers['answers'], $answer);
+        }
+        return $questionWithAnswers;
+    }
+
+
+    public function answerAction()
+    {
+
+        $question = $this->getNextQuestionAnswer($_SESSION['activeQuizId'], $_SESSION['questionIndex']);
+
+        if($question['id'] === null){
+            return "malacis, tu esi kko pabeidzis";
         }
 
+
+        return $question;
     }
 
-    public function fff()
-    {
-        $answerId = $this->post->get('answerId');
 
 
-        $index = isset($_SESSION['questionIndex']) ? (int)$_SESSION['questionIndex'] : 0;
-        $index++;
-        $answerId++;
-        $_SESSION['questionIndex'] = $index;
-
-        return $this->getQuestion($index);
-    }
 }

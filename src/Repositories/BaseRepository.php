@@ -27,9 +27,9 @@ abstract class BaseRepository implements RepositoryInterface
         return $instances;
     }
 
-    public function getAnswers(): array
+    public function getAnswers($questionid): array
     {
-        $dataArray = $this->connection->select(static::getTableName(), ['question_id' ]);
+        $dataArray = $this->connection->select(static::getTableName(), ['question_id'=> $questionid ]);
 
         $answers = [];
 
@@ -40,10 +40,10 @@ abstract class BaseRepository implements RepositoryInterface
 
     }
 
-    public function getQuestions(): array
+    public function getQuestions($quizId): array
 
     {
-        $dataArray = $this->connection->select(static::getTableName(), ['quiz_id' ]);
+        $dataArray = $this->connection->select(static::getTableName(), ['quiz_id' => $quizId ]);
 
         $questions = [];
 
@@ -52,6 +52,9 @@ abstract class BaseRepository implements RepositoryInterface
         }
         return $questions;
     }
+
+
+
 
 
 
@@ -109,10 +112,14 @@ abstract class BaseRepository implements RepositoryInterface
         return $this->one(['id' => $id]);
     }
 
-    public function getOneQuestion(int $questionid)
+
+
+    public function getOneQuestion( int $questionid)
     {
-        return $this->one(['id' => $questionid]);
+        return $this->one(['questionid' => $questionid]);
     }
+
+
 
 
 
